@@ -97,14 +97,14 @@ export class SignalsAPI {
     return this.request(`${this.businessPath(businessId)}/subscriptions/${id}`, { method: 'GET' });
   }
 
-  async createSubscription(businessId: string, data: { signal_slug: string; name: string; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
+  async createSubscription(businessId: string, data: { signal_slug: string; name: string; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
     return this.request(`${this.businessPath(businessId)}/subscriptions`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateSubscription(businessId: string, id: string, data: { name?: string; active?: boolean; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
+  async updateSubscription(businessId: string, id: string, data: { name?: string; active?: boolean; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
     return this.request(`${this.businessPath(businessId)}/subscriptions/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),

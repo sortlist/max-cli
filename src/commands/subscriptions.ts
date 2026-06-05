@@ -55,7 +55,7 @@ export async function createSubscription(args: { business: string; signal: strin
     }
   }
 
-  let parsedIntegrations: Array<{ integration_id: number; auto_deliver?: boolean; overloop_campaign_id?: string; overloop_campaign_name?: string }> | undefined;
+  let parsedIntegrations: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> | undefined;
   if (args.integrations) {
     try {
       parsedIntegrations = JSON.parse(args.integrations);
@@ -89,7 +89,7 @@ export async function updateSubscription(args: { business: string; id: string; n
     process.exit(1);
   }
 
-  const data: { name?: string; active?: boolean; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; overloop_campaign_id?: string; overloop_campaign_name?: string }> } = {};
+  const data: { name?: string; active?: boolean; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> } = {};
   if (args.name !== undefined) data.name = args.name;
   if (args.active !== undefined) data.active = args.active;
   if (args['daily-lead-limit'] !== undefined) data.daily_lead_limit = args['daily-lead-limit'];

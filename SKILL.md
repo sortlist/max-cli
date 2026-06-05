@@ -23,8 +23,9 @@ signals login
 - **Subscription**: An active signal you've configured (e.g. "Track engagers on Apple's LinkedIn page"). You create, pause, resume, and delete these.
 - **Lead**: An enriched profile discovered by a subscription. Contains name, email, company, LinkedIn URL, and more.
 - **Webhook**: A URL that receives an HTTP POST whenever a new lead is discovered.
-- **Integration**: A connected external tool (e.g. Overloop) that can receive leads. Integrations are configured at the business level, then linked to individual subscriptions for automatic or manual delivery.
-- **Subscription Integration**: The link between a subscription and an integration, with settings like `auto_deliver` and an Overloop `campaign_id`.
+- **Integration**: A connected external tool (e.g. Overloop, Instantly, Slack, Webhook) that can receive leads. Integrations are configured at the business level, then linked to individual subscriptions for automatic or manual delivery.
+- **Campaign-based integration**: Integrations like Overloop and Instantly that organize outreach into campaigns. They expose campaigns via `integrations:campaigns` and support enrolling leads into a specific campaign.
+- **Subscription Integration**: The link between a subscription and an integration, with settings like `auto_deliver` and a `campaign_id` (for campaign-based integrations).
 
 ## All Commands
 
@@ -83,10 +84,10 @@ signals subscriptions:create --business 1 --signal linkedin-company-engagers --n
 signals subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" --daily-lead-limit 50 \
   --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}'
 
-# Create a subscription with an Overloop integration linked
+# Create a subscription with a campaign integration linked (Overloop or Instantly)
 signals subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" \
   --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}' \
-  --integrations '[{"integration_id":5,"auto_deliver":true,"overloop_campaign_id":"abc123","overloop_campaign_name":"Q1 Outreach"}]'
+  --integrations '[{"integration_id":5,"auto_deliver":true,"campaign_id":"abc123","campaign_name":"Q1 Outreach"}]'
 
 # Update a subscription
 signals subscriptions:update <id> --business <business_id> [--name <name>] [--active <bool>] [--config '<json>'] [--daily-lead-limit <n>] [--integrations '<json>']
@@ -97,7 +98,7 @@ signals subscriptions:update 42 --business 1 --daily-lead-limit 200
 
 # Link or update integrations on an existing subscription
 signals subscriptions:update 42 --business 1 \
-  --integrations '[{"integration_id":5,"auto_deliver":true,"overloop_campaign_id":"abc123","overloop_campaign_name":"Q1 Outreach"}]'
+  --integrations '[{"integration_id":5,"auto_deliver":true,"campaign_id":"abc123","campaign_name":"Q1 Outreach"}]'
 
 # Pause a subscription (stops scanning for new leads)
 signals subscriptions:pause <id> --business <business_id>
@@ -112,14 +113,14 @@ signals subscriptions:delete <id> --business <business_id>
 signals subscriptions:delete 42 --business 1
 ```
 
-### Integrations (connected tools like Overloop)
+### Integrations (connected tools like Overloop and Instantly)
 
 ```bash
 # List all integrations for a business
 signals integrations:list --business <id>
 signals integrations:list --business 1
 
-# List Overloop campaigns available in an integration
+# List campaigns available in a campaign-based integration (Overloop or Instantly)
 signals integrations:campaigns <integration_id> --business <business_id>
 signals integrations:campaigns 5 --business 1
 ```
@@ -127,8 +128,8 @@ signals integrations:campaigns 5 --business 1
 The `--integrations` option on `subscriptions:create` and `subscriptions:update` accepts a JSON array. Each entry has:
 - `integration_id` (required): The integration to link.
 - `auto_deliver` (optional, default false): If true, new leads are automatically sent to this integration.
-- `overloop_campaign_id` (optional): The Overloop campaign ID to enroll leads into.
-- `overloop_campaign_name` (optional): Display name for the campaign.
+- `campaign_id` (optional): The campaign ID to enroll leads into (for campaign-based integrations like Overloop and Instantly). Legacy alias: `overloop_campaign_id`.
+- `campaign_name` (optional): Display name for the campaign. Legacy alias: `overloop_campaign_name`.
 
 Passing `--integrations` replaces all current integration links on the subscription. Omit an integration from the array to unlink it.
 
@@ -149,7 +150,7 @@ signals leads:get 1234 --business 1
 signals leads:delete <id> --business <business_id>
 signals leads:delete 1234 --business 1
 
-# Enroll leads into an Overloop campaign
+# Enroll leads into a campaign (Overloop or Instantly)
 signals leads:enroll --business <id> --integration <integration_id> --campaign <campaign_id> --leads <comma_separated_ids>
 signals leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,101,102
 ```
@@ -217,10 +218,10 @@ signals webhooks:list --business 1
 signals webhooks:delete 10 --business 1
 ```
 
-### Connect an Overloop integration to a subscription
+### Connect a campaign integration (Overloop or Instantly) to a subscription
 
 ```bash
-# 1. List integrations to find the Overloop integration ID
+# 1. List integrations to find the campaign integration ID
 signals integrations:list --business 1
 
 # 2. List available campaigns for that integration
@@ -228,10 +229,10 @@ signals integrations:campaigns 5 --business 1
 
 # 3. Link the integration to a subscription with auto-delivery
 signals subscriptions:update 42 --business 1 \
-  --integrations '[{"integration_id":5,"auto_deliver":true,"overloop_campaign_id":"abc123","overloop_campaign_name":"Q1 Outreach"}]'
+  --integrations '[{"integration_id":5,"auto_deliver":true,"campaign_id":"abc123","campaign_name":"Q1 Outreach"}]'
 ```
 
-### Manually enroll leads into an Overloop campaign
+### Manually enroll leads into a campaign (Overloop or Instantly)
 
 ```bash
 # 1. Find leads to enroll

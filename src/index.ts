@@ -175,7 +175,7 @@ yargs(hideBin(process.argv))
           type: 'number',
         })
         .option('integrations', {
-          describe: 'Integrations config as JSON array (e.g. \'[{"integration_id":1,"auto_deliver":true,"overloop_campaign_id":"abc"}]\')',
+          describe: 'Integrations config as JSON array (e.g. \'[{"integration_id":1,"auto_deliver":true,"campaign_id":"abc"}]\')',
           type: 'string',
         })
         .example(
@@ -199,7 +199,7 @@ yargs(hideBin(process.argv))
           type: 'number',
         })
         .option('integrations', {
-          describe: 'Integrations config as JSON array (e.g. \'[{"integration_id":1,"auto_deliver":true,"overloop_campaign_id":"abc"}]\')',
+          describe: 'Integrations config as JSON array (e.g. \'[{"integration_id":1,"auto_deliver":true,"campaign_id":"abc"}]\')',
           type: 'string',
         })
         .example('$0 subscriptions:update 42 --business 1 --name "New Name"', 'Rename a subscription');
@@ -247,7 +247,7 @@ yargs(hideBin(process.argv))
   )
   .command(
     'integrations:campaigns <id>',
-    'List Overloop campaigns for an integration',
+    'List campaigns for a campaign-based integration (Overloop, Instantly)',
     (yargs: Argv) => {
       return businessOption(yargs)
         .positional('id', { describe: 'Integration ID', type: 'string' })
@@ -292,16 +292,16 @@ yargs(hideBin(process.argv))
   )
   .command(
     'leads:enroll',
-    'Enroll leads into an Overloop campaign',
+    'Enroll leads into a campaign (Overloop or Instantly)',
     (yargs: Argv) => {
       return businessOption(yargs)
         .option('integration', {
-          describe: 'Overloop integration ID',
+          describe: 'Campaign integration ID (Overloop or Instantly)',
           type: 'string',
           demandOption: true,
         })
         .option('campaign', {
-          describe: 'Overloop campaign ID',
+          describe: 'Campaign ID (from integrations:campaigns)',
           type: 'string',
           demandOption: true,
         })
@@ -312,7 +312,7 @@ yargs(hideBin(process.argv))
         })
         .example(
           '$0 leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,101,102',
-          'Enroll leads into an Overloop campaign'
+          'Enroll leads into a campaign'
         );
     },
     enrollLeads as any
