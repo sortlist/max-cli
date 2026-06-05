@@ -12,7 +12,19 @@ Signals is a lead intelligence platform that monitors sources (LinkedIn, funding
 ```bash
 npm install -g signals-sortlist-cli
 signals login
-# Or set env var: export SIGNALS_API_KEY=your_api_key
+```
+
+`signals login` connects via your browser using the OAuth 2.0 device
+authorization flow (RFC 8628): it prints an `XXXX-XXXX` verification code, opens
+the Signals device page, and once you click **Connect** the CLI is authenticated
+automatically. Tokens are saved to `~/.signals/config.json` (mode 0600) and
+refreshed automatically. Run `signals logout` to disconnect.
+
+For CI or other non-interactive environments, skip `signals login` and set an API
+key instead (from Settings > API Keys), which always takes precedence:
+
+```bash
+export SIGNALS_API_KEY=your_api_key
 ```
 
 ## Concepts
@@ -258,7 +270,7 @@ signals subscriptions:resume 42 --business 1
 
 - **Exit code 0**: Success. Output is JSON on stdout.
 - **Exit code 1**: Error. Message is printed to stderr.
-- **401**: Invalid or missing API key.
+- **401**: Not authenticated (run `signals login`) or an invalid/expired credential. OAuth sessions are refreshed automatically; if refresh fails, log in again.
 - **404**: Resource not found.
 - **422**: Validation error (e.g. missing required fields).
 - **429**: Rate limited (60 requests/minute per key).
@@ -267,4 +279,7 @@ signals subscriptions:resume 42 --business 1
 
 | Variable | Required | Description |
 |---|---|---|
-| `SIGNALS_API_KEY` | No | Your Signals API key (overrides saved config from `signals login`) |
+| `SIGNALS_API_KEY` | No | Your Signals API key. Takes precedence over the OAuth session saved by `signals login`. |
+| `SIGNALS_API_URL` | No | Override the API base URL (default `https://api.meetsignals.ai`). |
+| `SIGNALS_OAUTH_URL` | No | Override the OAuth/authorization server URL used by `signals login` (default `https://meetsignals.ai`). |
+| `SIGNALS_CLI_CLIENT_ID` | No | Override the public OAuth client_id (default `signals-cli`). |

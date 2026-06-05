@@ -25,13 +25,13 @@ yargs(hideBin(process.argv))
 
   .command(
     'login',
-    'Authenticate with your Signals API key',
+    'Connect the CLI to your Signals account (opens your browser)',
     {},
     login as any
   )
   .command(
     'logout',
-    'Remove saved API key',
+    'Disconnect and remove saved credentials',
     {},
     logout as any
   )
@@ -365,7 +365,8 @@ yargs(hideBin(process.argv))
   .alias('v', 'version')
   .epilogue(
     'For more information, visit: https://github.com/sortlist/signals-cli\n\n' +
-    'Set your API key: export SIGNALS_API_KEY=your_api_key\n' +
-    'Get your key from Settings > API Keys in your Signals dashboard.'
+    'Getting started: run "signals login" to connect via your browser.\n\n' +
+    'CI / non-interactive use: set an API key from Settings > API Keys instead:\n' +
+    '  export SIGNALS_API_KEY=your_api_key'
   )
   .parse();

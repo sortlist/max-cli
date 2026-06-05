@@ -1,20 +1,63 @@
 import fetch from 'node-fetch';
-import { SignalsConfig } from './config';
+import { SignalsConfig, saveConfig } from './config';
+import { refreshAccessToken } from './oauth';
+
+// Refresh the access token this many milliseconds before it actually expires.
+const EXPIRY_SKEW_MS = 60_000;
 
 export class SignalsAPI {
-  private apiKey: string;
+  private config: SignalsConfig;
   private baseUrl: string;
+  // Env-provided keys are never written back to disk.
+  private persist: boolean;
 
   constructor(config: SignalsConfig) {
-    this.apiKey = config.apiKey;
+    this.config = { ...config };
+    this.persist = !process.env.SIGNALS_API_KEY;
     this.baseUrl = (process.env.SIGNALS_API_URL || 'https://api.meetsignals.ai').replace(/\/$/, '');
   }
 
-  private async request(endpoint: string, options: any = {}) {
+  private isExpired(): boolean {
+    if (!this.config.expiresAt) return false;
+    return Date.now() >= this.config.expiresAt - EXPIRY_SKEW_MS;
+  }
+
+  private async refresh(): Promise<void> {
+    if (!this.config.refreshToken) {
+      throw new Error('Your session has expired. Run "signals login" to reconnect.');
+    }
+    const tokens = await refreshAccessToken(this.config.refreshToken);
+    this.config.accessToken = tokens.accessToken;
+    this.config.refreshToken = tokens.refreshToken ?? this.config.refreshToken;
+    this.config.expiresAt = tokens.expiresAt;
+    this.config.tokenType = tokens.tokenType;
+    if (this.persist) {
+      saveConfig({
+        accessToken: this.config.accessToken,
+        refreshToken: this.config.refreshToken,
+        expiresAt: this.config.expiresAt,
+        tokenType: this.config.tokenType,
+      });
+    }
+  }
+
+  // Resolves a valid bearer token: env/legacy API keys are used as-is, OAuth
+  // access tokens are proactively refreshed when expired.
+  private async resolveToken(): Promise<string> {
+    if (this.config.apiKey) return this.config.apiKey;
+    if (this.config.accessToken) {
+      if (this.isExpired()) await this.refresh();
+      return this.config.accessToken!;
+    }
+    throw new Error('Not authenticated. Run "signals login".');
+  }
+
+  private async request(endpoint: string, options: any = {}, retried = false): Promise<any> {
+    const token = await this.resolveToken();
     const url = `${this.baseUrl}/api/v1${endpoint}`;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${this.apiKey}`,
+      Authorization: `Bearer ${token}`,
       ...options.headers,
     };
 
@@ -22,6 +65,13 @@ export class SignalsAPI {
 
     if (response.status === 204) {
       return null;
+    }
+
+    // A 401 on an OAuth token may mean it was revoked/expired server-side;
+    // try a single refresh + retry before surfacing the error.
+    if (response.status === 401 && !retried && this.config.accessToken && this.config.refreshToken) {
+      await this.refresh();
+      return this.request(endpoint, options, true);
     }
 
     if (!response.ok) {

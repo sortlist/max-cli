@@ -1,55 +1,71 @@
-import { createInterface } from 'readline';
 import { SignalsAPI } from '../api';
-import { saveConfig, getConfigPath } from '../config';
-
-function prompt(question: string): Promise<string> {
-  const rl = createInterface({ input: process.stdin, output: process.stderr });
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      rl.close();
-      resolve(answer.trim());
-    });
-  });
-}
+import { clearConfig, getConfigPath, loadSavedConfig, saveConfig } from '../config';
+import { openBrowser, pollForToken, requestDeviceCode, revokeToken } from '../oauth';
 
 export async function login() {
   process.stderr.write('\n  Signals CLI — Login\n\n');
-  process.stderr.write('  Enter your API key (from Settings > API Keys in your dashboard).\n\n');
 
-  const apiKey = await prompt('  API key: ');
-
-  if (!apiKey) {
-    console.error('\n  No API key provided. Aborting.');
+  let device;
+  try {
+    device = await requestDeviceCode();
+  } catch (error: any) {
+    console.error(`  ${error.message}`);
     process.exit(1);
   }
 
-  process.stderr.write('\n  Verifying...');
+  const target = device.verificationUriComplete || device.verificationUri;
+
+  process.stderr.write(`  Your verification code:  ${device.userCode}\n\n`);
+  process.stderr.write(`  Opening your browser to confirm it:\n  ${target}\n\n`);
+  process.stderr.write(`  If the browser doesn't open, go to ${device.verificationUri}\n`);
+  process.stderr.write(`  and enter the code above.\n\n`);
+
+  openBrowser(target);
+
+  process.stderr.write('  Waiting for you to confirm in the browser… ');
+
+  let tokens;
+  try {
+    tokens = await pollForToken(device);
+  } catch (error: any) {
+    process.stderr.write('FAILED\n\n');
+    console.error(`  ${error.message}`);
+    process.exit(1);
+  }
+
+  // Persist only the OAuth tokens, dropping any stale legacy API key.
+  saveConfig({
+    accessToken: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
+    expiresAt: tokens.expiresAt,
+    tokenType: tokens.tokenType,
+  });
+
+  process.stderr.write('OK\n\n');
+  process.stderr.write('  Connected successfully.\n');
 
   try {
-    const api = new SignalsAPI({ apiKey });
-    const result = await api.listBusinesses();
-    const count = result.businesses?.length ?? 0;
-
-    saveConfig({ apiKey });
-
-    process.stderr.write(' OK\n\n');
-    process.stderr.write(`  Authenticated successfully. ${count} business${count !== 1 ? 'es' : ''} found.\n`);
-    process.stderr.write(`  Config saved to ${getConfigPath()}\n\n`);
-  } catch (error: any) {
-    process.stderr.write(' FAILED\n\n');
-    console.error(`  Invalid API key: ${error.message}`);
-    process.exit(1);
+    const api = new SignalsAPI(loadSavedConfig()!);
+    const result: any = await api.listBusinesses();
+    const count = result?.businesses?.length ?? 0;
+    process.stderr.write(`  ${count} business${count !== 1 ? 'es' : ''} available to your account.\n`);
+  } catch {
+    // Connection succeeded; a failed verification call is non-fatal.
   }
+
+  process.stderr.write(`  Config saved to ${getConfigPath()}\n\n`);
 }
 
 export async function logout() {
-  const { existsSync, unlinkSync } = await import('fs');
-  const configPath = getConfigPath();
+  const saved = loadSavedConfig();
 
-  if (existsSync(configPath)) {
-    unlinkSync(configPath);
-    process.stderr.write('Logged out. Config removed.\n');
+  if (saved?.accessToken) {
+    await revokeToken(saved.accessToken);
+  }
+
+  if (clearConfig()) {
+    process.stderr.write('Logged out. Saved credentials removed.\n');
   } else {
-    process.stderr.write('No saved config found.\n');
+    process.stderr.write('No saved credentials found.\n');
   }
 }

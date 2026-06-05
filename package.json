@@ -1,6 +1,6 @@
 {
   "name": "signals-sortlist-cli",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Signals CLI - Command line interface for the Signals lead intelligence API. Discover leads, manage subscriptions, and automate workflows from the terminal or AI agents.",
   "main": "dist/index.js",
   "bin": {
