@@ -1,28 +1,74 @@
+<div align="center">
+
 # Signals CLI
 
-[![npm](https://img.shields.io/npm/v/signals-sortlist-cli)](https://www.npmjs.com/package/signals-sortlist-cli) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
+**Know who's buying before they tell you.**
 
-**Lead intelligence CLI for developers and AI agents** -- Discover leads, manage subscriptions, and automate workflows from the terminal.
+Monitor LinkedIn engagers, keyword posters, job changers, and funding events. Get leads delivered to your terminal.
 
-The Signals CLI provides a command-line interface to the [Signals](https://signals.sortlist.com/) API, enabling developers and AI agents to monitor sources (LinkedIn, funding databases, etc.) and discover new leads programmatically.
+[![npm](https://img.shields.io/npm/v/signals-sortlist-cli)](https://www.npmjs.com/package/signals-sortlist-cli)
+[![npm downloads](https://img.shields.io/npm/dw/signals-sortlist-cli)](https://www.npmjs.com/package/signals-sortlist-cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
+
+</div>
 
 ---
 
-## Installation
+## Quick Start
 
 ```bash
 npm install -g signals-sortlist-cli
+signals login
+signals businesses:create --website https://acme.com
+signals subscriptions:create --business 1 --signal linkedin-company-engagers --name "Acme watchers" --config '{"linkedin_url":"https://linkedin.com/company/acme/"}'
+signals leads:list --business 1
 ```
 
-### For AI Agents
+Set up monitoring in 4 commands. Leads start flowing.
 
-Install the Signals skill for your AI agent (Cursor, Claude Code, OpenClaw, etc.):
+## Why Signals CLI
+
+- **Intent signals** -- know who's engaging with competitors, posting about your keywords, changing jobs, getting funded
+- **CLI-first** -- built for terminals and AI agents, not dashboards
+- **Auto-enriched leads** -- name, company, email, phone, LinkedIn URL
+- **JSON output** -- every command returns JSON, pipe to `jq` or feed to your agent
+- **Webhooks** -- get real-time notifications when new leads drop
+
+## Signal Types
+
+| Signal | What it detects |
+|--------|----------------|
+| `linkedin-company-engagers` | People engaging with a company's LinkedIn posts |
+| `linkedin-keyword-posters` | People posting about specific keywords |
+| `linkedin-job-changers` | People who recently changed roles |
+| `recently-funded` | Companies that just raised funding |
+
+## Works With
+
+Use as a standalone CLI or as a skill for your AI agent:
 
 ```bash
 npx skills add sortlist/signals-cli
 ```
 
-This installs the [SKILL.md](SKILL.md) which gives your agent full knowledge of the CLI commands, patterns, and workflows.
+Compatible with **Claude Code**, **Cursor**, **Gemini CLI**, **OpenCode**, **Codex**, and any agent that supports the Skills spec.
+
+## Signals + Overloop = Full Pipeline
+
+Pair with [Overloop CLI](https://github.com/sortlist/overloop-cli) for intent-driven outbound:
+
+```bash
+# 1. Detect who's engaging with your competitor
+signals leads:list --business 1 | jq '.leads[] | .payload'
+
+# 2. Add to Overloop as prospects
+overloop prospects:create --email lead@company.com --first-name Jane
+
+# 3. Enroll in a campaign
+overloop enrollments:create --campaign 1 --prospect <id>
+```
+
+Intent detected. Outreach launched. Pipeline built. Three CLI calls.
 
 ---
 
