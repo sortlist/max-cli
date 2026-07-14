@@ -1,5 +1,5 @@
 ---
-name: signals-cli
+name: max-cli
 description: Max CLI skill — Monitor sources (LinkedIn, funding databases, etc.) and discover new leads programmatically
 ---
 
