@@ -1,6 +1,6 @@
 {
   "name": "sortlist-max-cli",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Max CLI - Command line interface for the Max lead intelligence API. Discover leads, manage subscriptions, and automate workflows from the terminal or AI agents.",
   "main": "dist/index.js",
   "bin": {

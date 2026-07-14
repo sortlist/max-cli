@@ -26,7 +26,7 @@ export function oauthBaseUrl(): string {
 
 /** Public client_id baked into the CLI; overridable for self-hosted setups. */
 export function clientId(): string {
-  return process.env.SIGNALS_CLI_CLIENT_ID || 'signals-cli';
+  return process.env.MAX_CLI_CLIENT_ID || 'max-cli';
 }
 
 async function parseJson(response: import('node-fetch').Response): Promise<any> {

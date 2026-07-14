@@ -275,4 +275,4 @@ max subscriptions:resume 42 --business 1
 | `MAX_API_KEY` | No | Your Max API key. Takes precedence over the OAuth session saved by `max login`. |
 | `MAX_API_URL` | No | Override the API base URL (default `https://api.yourmax.ai`). |
 | `MAX_OAUTH_URL` | No | Override the OAuth/authorization server URL used by `max login` (default `https://yourmax.ai`). |
-| `SIGNALS_CLI_CLIENT_ID` | No | Override the public OAuth client_id (default `signals-cli`). |
+| `MAX_CLI_CLIENT_ID` | No | Override the public OAuth client_id (default `max-cli`). |
