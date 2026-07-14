@@ -1,9 +1,9 @@
-import { SignalsAPI } from '../api';
+import { ApiClient } from '../api';
 import { getConfig } from '../config';
 
 export async function listSubscriptions(args: { business: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   try {
     const result = await api.listSubscriptions(args.business);
@@ -16,7 +16,7 @@ export async function listSubscriptions(args: { business: string }) {
 
 export async function getSubscription(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Subscription ID is required.');
@@ -32,9 +32,9 @@ export async function getSubscription(args: { business: string; id: string }) {
   }
 }
 
-export async function createSubscription(args: { business: string; signal: string; name: string; config?: string; 'daily-lead-limit'?: number; integrations?: string }) {
+export async function createSubscription(args: { business: string; signal: string; name: string; config?: string; integrations?: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.signal) {
     console.error('--signal (signal slug) is required.');
@@ -70,7 +70,6 @@ export async function createSubscription(args: { business: string; signal: strin
       signal_slug: args.signal,
       name: args.name,
       config: parsedConfig,
-      daily_lead_limit: args['daily-lead-limit'],
       integrations: parsedIntegrations,
     });
     console.log(JSON.stringify(result, null, 2));
@@ -80,19 +79,18 @@ export async function createSubscription(args: { business: string; signal: strin
   }
 }
 
-export async function updateSubscription(args: { business: string; id: string; name?: string; active?: boolean; config?: string; 'daily-lead-limit'?: number; integrations?: string }) {
+export async function updateSubscription(args: { business: string; id: string; name?: string; active?: boolean; config?: string; integrations?: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Subscription ID is required.');
     process.exit(1);
   }
 
-  const data: { name?: string; active?: boolean; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> } = {};
+  const data: { name?: string; active?: boolean; config?: Record<string, any>; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> } = {};
   if (args.name !== undefined) data.name = args.name;
   if (args.active !== undefined) data.active = args.active;
-  if (args['daily-lead-limit'] !== undefined) data.daily_lead_limit = args['daily-lead-limit'];
   if (args.config) {
     try {
       data.config = JSON.parse(args.config);
@@ -121,7 +119,7 @@ export async function updateSubscription(args: { business: string; id: string; n
 
 export async function pauseSubscription(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Subscription ID is required.');
@@ -139,7 +137,7 @@ export async function pauseSubscription(args: { business: string; id: string }) 
 
 export async function resumeSubscription(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Subscription ID is required.');
@@ -157,7 +155,7 @@ export async function resumeSubscription(args: { business: string; id: string })
 
 export async function deleteSubscription(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Subscription ID is required.');

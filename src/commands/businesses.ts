@@ -1,9 +1,9 @@
-import { SignalsAPI } from '../api';
+import { ApiClient } from '../api';
 import { getConfig } from '../config';
 
 export async function listBusinesses() {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   try {
     const result = await api.listBusinesses();
@@ -16,7 +16,7 @@ export async function listBusinesses() {
 
 export async function getBusiness(args: { id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Business ID is required.');
@@ -34,7 +34,7 @@ export async function getBusiness(args: { id: string }) {
 
 export async function updateBusiness(args: { id: string; name?: string; website?: string; description?: string; icp?: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Business ID is required.');
@@ -71,7 +71,7 @@ export async function updateBusiness(args: { id: string; name?: string; website?
 
 export async function createBusiness(args: { name?: string; website?: string; description?: string; icp?: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.name && !args.website) {
     console.error('Either --name or --website is required.');

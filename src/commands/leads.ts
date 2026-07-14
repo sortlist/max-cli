@@ -1,9 +1,9 @@
-import { SignalsAPI } from '../api';
+import { ApiClient } from '../api';
 import { getConfig } from '../config';
 
 export async function listLeads(args: { business: string; page?: number; 'per-page'?: number }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   try {
     const result = await api.listLeads(args.business, {
@@ -19,7 +19,7 @@ export async function listLeads(args: { business: string; page?: number; 'per-pa
 
 export async function getLead(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Lead ID is required.');
@@ -37,7 +37,7 @@ export async function getLead(args: { business: string; id: string }) {
 
 export async function deleteLead(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Lead ID is required.');
@@ -55,7 +55,7 @@ export async function deleteLead(args: { business: string; id: string }) {
 
 export async function enrollLeads(args: { business: string; integration: string; campaign: string; leads: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.integration) {
     console.error('--integration (Overloop integration ID) is required.');

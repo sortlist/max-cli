@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "command -v signals >/dev/null 2>&1 || (echo 'Signals CLI not found. Install with: npm install -g signals-sortlist-cli' >&2 && exit 0)"
+            "command": "command -v max >/dev/null 2>&1 || (echo 'Max CLI not found. Install with: npm install -g sortlist-max-cli' >&2 && exit 0)"
           }
         ]
       }

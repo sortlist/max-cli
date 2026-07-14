@@ -1,9 +1,9 @@
-import { SignalsAPI } from '../api';
+import { ApiClient } from '../api';
 import { getConfig } from '../config';
 
 export async function listWebhooks(args: { business: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   try {
     const result = await api.listWebhooks(args.business);
@@ -16,7 +16,7 @@ export async function listWebhooks(args: { business: string }) {
 
 export async function createWebhook(args: { business: string; url: string; secret?: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.url) {
     console.error('--url is required.');
@@ -37,7 +37,7 @@ export async function createWebhook(args: { business: string; url: string; secre
 
 export async function deleteWebhook(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Webhook ID is required.');

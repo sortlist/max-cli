@@ -1,9 +1,9 @@
-import { SignalsAPI } from '../api';
+import { ApiClient } from '../api';
 import { getConfig } from '../config';
 
 export async function listIntegrations(args: { business: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   try {
     const result = await api.listIntegrations(args.business);
@@ -16,7 +16,7 @@ export async function listIntegrations(args: { business: string }) {
 
 export async function listCampaigns(args: { business: string; id: string }) {
   const config = getConfig();
-  const api = new SignalsAPI(config);
+  const api = new ApiClient(config);
 
   if (!args.id) {
     console.error('Integration ID is required.');

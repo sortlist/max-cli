@@ -1,10 +1,10 @@
 {
-  "name": "signals-sortlist-cli",
-  "version": "1.5.0",
-  "description": "Signals CLI - Command line interface for the Signals lead intelligence API. Discover leads, manage subscriptions, and automate workflows from the terminal or AI agents.",
+  "name": "sortlist-max-cli",
+  "version": "1.5.1",
+  "description": "Max CLI - Command line interface for the Max lead intelligence API. Discover leads, manage subscriptions, and automate workflows from the terminal or AI agents.",
   "main": "dist/index.js",
   "bin": {
-    "signals": "dist/index.js"
+    "max": "dist/index.js"
   },
   "scripts": {
     "dev": "tsup --watch",
@@ -35,11 +35,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sortlist/signals-cli.git"
+    "url": "git+https://github.com/sortlist/max-cli.git"
   },
-  "homepage": "https://github.com/sortlist/signals-cli#readme",
+  "homepage": "https://github.com/sortlist/max-cli#readme",
   "bugs": {
-    "url": "https://github.com/sortlist/signals-cli/issues"
+    "url": "https://github.com/sortlist/max-cli/issues"
   },
   "engines": {
     "node": ">=18.0.0"

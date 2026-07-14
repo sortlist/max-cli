@@ -3,32 +3,32 @@ name: leads
 description: Discover and manage leads from intent signals — list discovered leads, enroll them into Overloop campaigns, and set up webhooks for real-time notifications. Use when the user wants to harvest leads, push them to outbound campaigns, or automate lead delivery.
 ---
 
-# Signals Leads
+# Max Leads
 
-You have access to the `signals` CLI to manage leads discovered by intent signal monitoring.
+You have access to the `max` CLI to manage leads discovered by intent signal monitoring.
 
 ## Prerequisites
 
-The CLI must be installed (`npm install -g signals-sortlist-cli`) and authenticated (`signals login` or `SIGNALS_API_KEY` env var).
+The CLI must be installed (`npm install -g sortlist-max-cli`) and authenticated (`max login` or `MAX_API_KEY` env var).
 
 ## Lead Commands
 
 ### List Discovered Leads
 ```bash
-signals leads:list --business <business_id> [--page N] [--per-page N]
+max leads:list --business <business_id> [--page N] [--per-page N]
 ```
 Returns leads sorted newest first. Each lead includes contact details, company info, and the signal that triggered discovery.
 
 ### Enroll Leads into Overloop Campaign
 ```bash
-signals leads:enroll --business <business_id> \
+max leads:enroll --business <business_id> \
   --integration-id <overloop_integration_id> \
   --campaign-id <overloop_campaign_id> \
   --lead-ids "[1,2,3,4,5]"
 ```
 
 Parameters:
-- `--integration-id`: your Overloop integration ID (links Signals to Overloop account)
+- `--integration-id`: your Overloop integration ID (links Max to Overloop account)
 - `--campaign-id`: which Overloop campaign to enroll leads into
 - `--lead-ids`: JSON array of lead IDs to enroll
 
@@ -40,12 +40,12 @@ Get real-time notifications when new leads are discovered.
 
 ### List Webhooks
 ```bash
-signals webhooks:list --business <business_id>
+max webhooks:list --business <business_id>
 ```
 
 ### Create Webhook
 ```bash
-signals webhooks:create --business <business_id> \
+max webhooks:create --business <business_id> \
   --url https://your-app.com/webhook \
   [--secret "signing_secret"]
 ```
@@ -54,16 +54,16 @@ signals webhooks:create --business <business_id> \
 
 ## Lead Harvesting Workflow
 
-1. **Check available leads**: `signals leads:list --business <id> --per-page 100`
+1. **Check available leads**: `max leads:list --business <id> --per-page 100`
 2. **Review lead quality**: Pipe through `jq` to filter by relevance
-3. **Enroll best leads into Overloop**: `signals leads:enroll --business <id> --integration-id <int_id> --campaign-id <camp_id> --lead-ids "[...]"`
-4. **Set up webhook for automation**: `signals webhooks:create --business <id> --url https://...`
+3. **Enroll best leads into Overloop**: `max leads:enroll --business <id> --integration-id <int_id> --campaign-id <camp_id> --lead-ids "[...]"`
+4. **Set up webhook for automation**: `max webhooks:create --business <id> --url https://...`
 
-## Connecting Signals to Overloop
+## Connecting Max to Overloop
 
-The Signals-to-Overloop pipeline:
+The Max-to-Overloop pipeline:
 
-1. **Signals monitors** buying intent (LinkedIn engagement, job changes, funding, etc.)
+1. **Max monitors** buying intent (LinkedIn engagement, job changes, funding, etc.)
 2. **Leads are discovered** matching your ICP
 3. **Enroll leads** into an Overloop campaign (manual or auto-deliver)
 4. **Overloop runs** the outbound email sequence

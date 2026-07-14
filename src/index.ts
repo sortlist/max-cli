@@ -8,6 +8,7 @@ import { listLeads, getLead, deleteLead, enrollLeads } from './commands/leads';
 import { listIntegrations, listCampaigns } from './commands/integrations';
 import { listWebhooks, createWebhook, deleteWebhook } from './commands/webhooks';
 import type { Argv } from 'yargs';
+import { BRAND_NAME } from './brand';
 
 const businessOption = (yargs: Argv) =>
   yargs.option('business', {
@@ -18,14 +19,14 @@ const businessOption = (yargs: Argv) =>
   });
 
 yargs(hideBin(process.argv))
-  .scriptName('signals')
+  .scriptName('max')
   .usage('$0 <command> [options]')
 
   // ── Auth ──
 
   .command(
     'login',
-    'Connect the CLI to your Signals account (opens your browser)',
+    `Connect the CLI to your ${BRAND_NAME} account (opens your browser)`,
     {},
     login as any
   )
@@ -126,7 +127,7 @@ yargs(hideBin(process.argv))
           'Rename a business'
         )
         .example(
-          '$0 businesses:update 1 --icp \'{"id":1,"target_job_titles":["CTO","VP Engineering"],"lead_matching_mode":70}\'',
+          '$0 businesses:update 1 --icp \'{"id":1,"target_job_titles":["CTO","VP Engineering"]}\'',
           'Update ICP'
         );
     },
@@ -170,10 +171,6 @@ yargs(hideBin(process.argv))
           describe: 'Signal-specific config as JSON string',
           type: 'string',
         })
-        .option('daily-lead-limit', {
-          describe: 'Maximum leads per day (default: 100)',
-          type: 'number',
-        })
         .option('integrations', {
           describe: 'Integrations config as JSON array (e.g. \'[{"integration_id":1,"auto_deliver":true,"campaign_id":"abc"}]\')',
           type: 'string',
@@ -194,10 +191,6 @@ yargs(hideBin(process.argv))
         .option('name', { describe: 'Updated name', type: 'string' })
         .option('active', { describe: 'Set active state', type: 'boolean' })
         .option('config', { describe: 'Updated config as JSON string', type: 'string' })
-        .option('daily-lead-limit', {
-          describe: 'Maximum leads per day (default: 100)',
-          type: 'number',
-        })
         .option('integrations', {
           describe: 'Integrations config as JSON array (e.g. \'[{"integration_id":1,"auto_deliver":true,"campaign_id":"abc"}]\')',
           type: 'string',
@@ -358,15 +351,15 @@ yargs(hideBin(process.argv))
     deleteWebhook as any
   )
 
-  .demandCommand(1, 'You need at least one command. Run signals --help to see available commands.')
+  .demandCommand(1, 'You need at least one command. Run max --help to see available commands.')
   .help()
   .alias('h', 'help')
   .version()
   .alias('v', 'version')
   .epilogue(
-    'For more information, visit: https://github.com/sortlist/signals-cli\n\n' +
-    'Getting started: run "signals login" to connect via your browser.\n\n' +
+    'For more information, visit: https://github.com/sortlist/max-cli\n\n' +
+    'Getting started: run "max login" to connect via your browser.\n\n' +
     'CI / non-interactive use: set an API key from Settings > API Keys instead:\n' +
-    '  export SIGNALS_API_KEY=your_api_key'
+    '  export MAX_API_KEY=your_api_key'
   )
   .parse();

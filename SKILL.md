@@ -1,30 +1,30 @@
 ---
 name: signals-cli
-description: Signals CLI skill — Monitor sources (LinkedIn, funding databases, etc.) and discover new leads programmatically
+description: Max CLI skill — Monitor sources (LinkedIn, funding databases, etc.) and discover new leads programmatically
 ---
 
-# Signals CLI Skill
+# Max CLI Skill
 
-Signals is a lead intelligence platform that monitors sources (LinkedIn, funding databases, etc.) and discovers new leads for sales teams. This CLI lets you manage businesses, signals, subscriptions, leads, and webhooks from the terminal.
+Max is a lead intelligence platform that monitors sources (LinkedIn, funding databases, etc.) and discovers new leads for sales teams. This CLI lets you manage businesses, signals, subscriptions, leads, and webhooks from the terminal.
 
 ## Setup
 
 ```bash
-npm install -g signals-sortlist-cli
-signals login
+npm install -g sortlist-max-cli
+max login
 ```
 
-`signals login` connects via your browser using the OAuth 2.0 device
+`max login` connects via your browser using the OAuth 2.0 device
 authorization flow (RFC 8628): it prints an `XXXX-XXXX` verification code, opens
-the Signals device page, and once you click **Connect** the CLI is authenticated
-automatically. Tokens are saved to `~/.signals/config.json` (mode 0600) and
-refreshed automatically. Run `signals logout` to disconnect.
+the Max device page, and once you click **Connect** the CLI is authenticated
+automatically. Tokens are saved to `~/.max/config.json` (mode 0600) and
+refreshed automatically. Run `max logout` to disconnect.
 
-For CI or other non-interactive environments, skip `signals login` and set an API
+For CI or other non-interactive environments, skip `max login` and set an API
 key instead (from Settings > API Keys), which always takes precedence:
 
 ```bash
-export SIGNALS_API_KEY=your_api_key
+export MAX_API_KEY=your_api_key
 ```
 
 ## Concepts
@@ -47,94 +47,87 @@ All output is JSON. Pipe to `jq` for filtering. Commands that operate on leads, 
 
 ```bash
 # List all businesses in the team
-signals businesses:list
+max businesses:list
 
 # Get a business with its Ideal Customer Profile
-signals businesses:get <id>
-signals businesses:get 1
+max businesses:get <id>
+max businesses:get 1
 
 # Create a business from a website (auto-analyzes name, description, ICP)
-signals businesses:create --website <url>
-signals businesses:create --website https://acme.com
+max businesses:create --website <url>
+max businesses:create --website https://acme.com
 
 # Create a business manually
-signals businesses:create --name <name> [--website <url>] [--description <text>] [--icp '<json>']
-signals businesses:create --name "Acme Corp" --website https://acme.com
+max businesses:create --name <name> [--website <url>] [--description <text>] [--icp '<json>']
+max businesses:create --name "Acme Corp" --website https://acme.com
 
 # Update a business or its ICP
-signals businesses:update <id> [--name <name>] [--website <url>] [--description <text>] [--icp '<json>']
-signals businesses:update 1 --icp '{"id":1,"target_job_titles":["CTO"],"lead_matching_mode":70}'
+max businesses:update <id> [--name <name>] [--website <url>] [--description <text>] [--icp '<json>']
+max businesses:update 1 --icp '{"id":1,"target_job_titles":["CTO"]}'
 ```
 
 ### Signals (read-only catalog)
 
 ```bash
 # List all available signal types
-signals signals:list
+max signals:list
 
 # Get details for a signal type
-signals signals:get <slug>
-signals signals:get linkedin-company-engagers
+max signals:get <slug>
+max signals:get linkedin-company-engagers
 ```
 
 ### Subscriptions (your active signals)
 
 ```bash
 # List all subscriptions for a business
-signals subscriptions:list --business <id>
-signals subscriptions:list --business 1
+max subscriptions:list --business <id>
+max subscriptions:list --business 1
 
 # Get a subscription with stats
-signals subscriptions:get <id> --business <business_id>
-signals subscriptions:get 42 --business 1
+max subscriptions:get <id> --business <business_id>
+max subscriptions:get 42 --business 1
 
 # Create a subscription
-signals subscriptions:create --business <id> --signal <slug> --name <name> [--config '<json>'] [--daily-lead-limit <n>] [--integrations '<json>']
-signals subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}'
-
-# Create a subscription with a custom daily lead limit
-signals subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" --daily-lead-limit 50 \
-  --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}'
+max subscriptions:create --business <id> --signal <slug> --name <name> [--config '<json>'] [--integrations '<json>']
+max subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}'
 
 # Create a subscription with a campaign integration linked (Overloop or Instantly)
-signals subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" \
+max subscriptions:create --business 1 --signal linkedin-company-engagers --name "Apple Engagers" \
   --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}' \
   --integrations '[{"integration_id":5,"auto_deliver":true,"campaign_id":"abc123","campaign_name":"Q1 Outreach"}]'
 
 # Update a subscription
-signals subscriptions:update <id> --business <business_id> [--name <name>] [--active <bool>] [--config '<json>'] [--daily-lead-limit <n>] [--integrations '<json>']
-signals subscriptions:update 42 --business 1 --name "New Name"
-
-# Change the daily lead limit
-signals subscriptions:update 42 --business 1 --daily-lead-limit 200
+max subscriptions:update <id> --business <business_id> [--name <name>] [--active <bool>] [--config '<json>'] [--integrations '<json>']
+max subscriptions:update 42 --business 1 --name "New Name"
 
 # Link or update integrations on an existing subscription
-signals subscriptions:update 42 --business 1 \
+max subscriptions:update 42 --business 1 \
   --integrations '[{"integration_id":5,"auto_deliver":true,"campaign_id":"abc123","campaign_name":"Q1 Outreach"}]'
 
 # Pause a subscription (stops scanning for new leads)
-signals subscriptions:pause <id> --business <business_id>
-signals subscriptions:pause 42 --business 1
+max subscriptions:pause <id> --business <business_id>
+max subscriptions:pause 42 --business 1
 
 # Resume a paused subscription
-signals subscriptions:resume <id> --business <business_id>
-signals subscriptions:resume 42 --business 1
+max subscriptions:resume <id> --business <business_id>
+max subscriptions:resume 42 --business 1
 
 # Delete a subscription
-signals subscriptions:delete <id> --business <business_id>
-signals subscriptions:delete 42 --business 1
+max subscriptions:delete <id> --business <business_id>
+max subscriptions:delete 42 --business 1
 ```
 
 ### Integrations (connected tools like Overloop and Instantly)
 
 ```bash
 # List all integrations for a business
-signals integrations:list --business <id>
-signals integrations:list --business 1
+max integrations:list --business <id>
+max integrations:list --business 1
 
 # List campaigns available in a campaign-based integration (Overloop or Instantly)
-signals integrations:campaigns <integration_id> --business <business_id>
-signals integrations:campaigns 5 --business 1
+max integrations:campaigns <integration_id> --business <business_id>
+max integrations:campaigns 5 --business 1
 ```
 
 The `--integrations` option on `subscriptions:create` and `subscriptions:update` accepts a JSON array. Each entry has:
@@ -151,36 +144,36 @@ Each lead includes: `id`, `external_id`, `name`, `headline`, `job_title`, `email
 
 ```bash
 # List leads (paginated)
-signals leads:list --business <id> [--page <n>] [--per-page <n>]
-signals leads:list --business 1 --page 2 --per-page 50
+max leads:list --business <id> [--page <n>] [--per-page <n>]
+max leads:list --business 1 --page 2 --per-page 50
 
 # Get a single lead with delivery history
-signals leads:get <id> --business <business_id>
-signals leads:get 1234 --business 1
+max leads:get <id> --business <business_id>
+max leads:get 1234 --business 1
 
 # Delete a lead (soft-delete)
-signals leads:delete <id> --business <business_id>
-signals leads:delete 1234 --business 1
+max leads:delete <id> --business <business_id>
+max leads:delete 1234 --business 1
 
 # Enroll leads into a campaign (Overloop or Instantly)
-signals leads:enroll --business <id> --integration <integration_id> --campaign <campaign_id> --leads <comma_separated_ids>
-signals leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,101,102
+max leads:enroll --business <id> --integration <integration_id> --campaign <campaign_id> --leads <comma_separated_ids>
+max leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,101,102
 ```
 
 ### Webhooks
 
 ```bash
 # List registered webhooks for a business
-signals webhooks:list --business <id>
-signals webhooks:list --business 1
+max webhooks:list --business <id>
+max webhooks:list --business 1
 
 # Create a webhook (with optional HMAC signing secret)
-signals webhooks:create --business <id> --url <url> [--secret <secret>]
-signals webhooks:create --business 1 --url https://example.com/webhook --secret my_secret
+max webhooks:create --business <id> --url <url> [--secret <secret>]
+max webhooks:create --business 1 --url https://example.com/webhook --secret my_secret
 
 # Delete a webhook
-signals webhooks:delete <id> --business <business_id>
-signals webhooks:delete 10 --business 1
+max webhooks:delete <id> --business <business_id>
+max webhooks:delete 10 --business 1
 ```
 
 ## Common Workflows
@@ -189,16 +182,16 @@ signals webhooks:delete 10 --business 1
 
 ```bash
 # 1. Create a business from a website (auto-generates ICP)
-signals businesses:create --website https://acme.com
+max businesses:create --website https://acme.com
 
 # 2. Note the business ID from the response, then browse signals
-signals signals:list
+max signals:list
 
 # 3. Get details on a signal
-signals signals:get linkedin-company-engagers
+max signals:get linkedin-company-engagers
 
 # 4. Create a subscription
-signals subscriptions:create --business 1 \
+max subscriptions:create --business 1 \
   --signal linkedin-company-engagers \
   --name "Acme Engagers" \
   --config '{"linkedin_url":"https://www.linkedin.com/company/acme/"}'
@@ -208,39 +201,39 @@ signals subscriptions:create --business 1 \
 
 ```bash
 # List recent leads
-signals leads:list --business 1 --per-page 100
+max leads:list --business 1 --per-page 100
 
 # Get full details for a specific lead (includes email, phone, deliveries)
-signals leads:get 1234 --business 1
+max leads:get 1234 --business 1
 
 # Get all leads as JSON for processing
-signals leads:list --business 1 --per-page 100 | jq '.leads[] | {name, email: .payload.email, company}'
+max leads:list --business 1 --per-page 100 | jq '.leads[] | {name, email: .payload.email, company}'
 ```
 
 ### Set up a webhook for real-time notifications
 
 ```bash
 # Register a webhook
-signals webhooks:create --business 1 --url https://my-app.com/signals-webhook --secret whsec_abc123
+max webhooks:create --business 1 --url https://my-app.com/signals-webhook --secret whsec_abc123
 
 # Verify it was created
-signals webhooks:list --business 1
+max webhooks:list --business 1
 
 # Remove it later
-signals webhooks:delete 10 --business 1
+max webhooks:delete 10 --business 1
 ```
 
 ### Connect a campaign integration (Overloop or Instantly) to a subscription
 
 ```bash
 # 1. List integrations to find the campaign integration ID
-signals integrations:list --business 1
+max integrations:list --business 1
 
 # 2. List available campaigns for that integration
-signals integrations:campaigns 5 --business 1
+max integrations:campaigns 5 --business 1
 
 # 3. Link the integration to a subscription with auto-delivery
-signals subscriptions:update 42 --business 1 \
+max subscriptions:update 42 --business 1 \
   --integrations '[{"integration_id":5,"auto_deliver":true,"campaign_id":"abc123","campaign_name":"Q1 Outreach"}]'
 ```
 
@@ -248,10 +241,10 @@ signals subscriptions:update 42 --business 1 \
 
 ```bash
 # 1. Find leads to enroll
-signals leads:list --business 1 --per-page 50
+max leads:list --business 1 --per-page 50
 
 # 2. Enroll specific leads by ID
-signals leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,101,102
+max leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,101,102
 # Returns: {"enqueued": 3, "skipped": 0}
 # Leads without an email or LinkedIn URL are skipped.
 ```
@@ -260,17 +253,17 @@ signals leads:enroll --business 1 --integration 5 --campaign abc123 --leads 100,
 
 ```bash
 # Pause (stops scanning)
-signals subscriptions:pause 42 --business 1
+max subscriptions:pause 42 --business 1
 
 # Resume (starts scanning again)
-signals subscriptions:resume 42 --business 1
+max subscriptions:resume 42 --business 1
 ```
 
 ## Error Handling
 
 - **Exit code 0**: Success. Output is JSON on stdout.
 - **Exit code 1**: Error. Message is printed to stderr.
-- **401**: Not authenticated (run `signals login`) or an invalid/expired credential. OAuth sessions are refreshed automatically; if refresh fails, log in again.
+- **401**: Not authenticated (run `max login`) or an invalid/expired credential. OAuth sessions are refreshed automatically; if refresh fails, log in again.
 - **404**: Resource not found.
 - **422**: Validation error (e.g. missing required fields).
 - **429**: Rate limited (60 requests/minute per key).
@@ -279,7 +272,7 @@ signals subscriptions:resume 42 --business 1
 
 | Variable | Required | Description |
 |---|---|---|
-| `SIGNALS_API_KEY` | No | Your Signals API key. Takes precedence over the OAuth session saved by `signals login`. |
-| `SIGNALS_API_URL` | No | Override the API base URL (default `https://api.meetsignals.ai`). |
-| `SIGNALS_OAUTH_URL` | No | Override the OAuth/authorization server URL used by `signals login` (default `https://meetsignals.ai`). |
+| `MAX_API_KEY` | No | Your Max API key. Takes precedence over the OAuth session saved by `max login`. |
+| `MAX_API_URL` | No | Override the API base URL (default `https://api.yourmax.ai`). |
+| `MAX_OAUTH_URL` | No | Override the OAuth/authorization server URL used by `max login` (default `https://yourmax.ai`). |
 | `SIGNALS_CLI_CLIENT_ID` | No | Override the public OAuth client_id (default `signals-cli`). |

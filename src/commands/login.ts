@@ -1,9 +1,10 @@
-import { SignalsAPI } from '../api';
+import { ApiClient } from '../api';
 import { clearConfig, getConfigPath, loadSavedConfig, saveConfig } from '../config';
 import { openBrowser, pollForToken, requestDeviceCode, revokeToken } from '../oauth';
+import { BRAND_NAME } from '../brand';
 
 export async function login() {
-  process.stderr.write('\n  Signals CLI — Login\n\n');
+  process.stderr.write(`\n  ${BRAND_NAME} CLI — Login\n\n`);
 
   let device;
   try {
@@ -45,7 +46,7 @@ export async function login() {
   process.stderr.write('  Connected successfully.\n');
 
   try {
-    const api = new SignalsAPI(loadSavedConfig()!);
+    const api = new ApiClient(loadSavedConfig()!);
     const result: any = await api.listBusinesses();
     const count = result?.businesses?.length ?? 0;
     process.stderr.write(`  ${count} business${count !== 1 ? 'es' : ''} available to your account.\n`);

@@ -1,25 +1,25 @@
-# Signals CLI
+# Max CLI
 
-[![npm](https://img.shields.io/npm/v/signals-sortlist-cli)](https://www.npmjs.com/package/signals-sortlist-cli) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/sortlist-max-cli)](https://www.npmjs.com/package/sortlist-max-cli) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 
 **Lead intelligence CLI for developers and AI agents** -- Discover leads, manage subscriptions, and automate workflows from the terminal.
 
-The Signals CLI provides a command-line interface to the [Signals](https://signals.sortlist.com/) API, enabling developers and AI agents to monitor sources (LinkedIn, funding databases, etc.) and discover new leads programmatically.
+The Max CLI provides a command-line interface to the [Max](https://yourmax.ai/) API, enabling developers and AI agents to monitor sources (LinkedIn, funding databases, etc.) and discover new leads programmatically.
 
 ---
 
 ## Installation
 
 ```bash
-npm install -g signals-sortlist-cli
+npm install -g sortlist-max-cli
 ```
 
 ### For AI Agents
 
-Install the Signals skill for your AI agent (Cursor, Claude Code, OpenClaw, etc.):
+Install the Max skill for your AI agent (Cursor, Claude Code, OpenClaw, etc.):
 
 ```bash
-npx skills add sortlist/signals-cli
+npx skills add sortlist/max-cli
 ```
 
 This installs the [SKILL.md](SKILL.md) which gives your agent full knowledge of the CLI commands, patterns, and workflows.
@@ -31,21 +31,21 @@ This installs the [SKILL.md](SKILL.md) which gives your agent full knowledge of 
 The recommended way to authenticate is the interactive login command:
 
 ```bash
-signals login
+max login
 ```
 
-This prompts for your API key (get it from **Settings > API Keys** in your dashboard), validates it, and saves it to `~/.signals/config.json`.
+This prompts for your API key (get it from **Settings > API Keys** in your dashboard), validates it, and saves it to `~/.max/config.json`.
 
-Alternatively, set the `SIGNALS_API_KEY` environment variable (takes priority over saved config):
+Alternatively, set the `MAX_API_KEY` environment variable (takes priority over saved config):
 
 ```bash
-export SIGNALS_API_KEY=your_api_key
+export MAX_API_KEY=your_api_key
 ```
 
 To remove saved credentials:
 
 ```bash
-signals logout
+max logout
 ```
 
 API keys are scoped to your **team**. Use `--business` (`-b`) to specify which business to operate on for leads, subscriptions, and webhooks.
@@ -60,10 +60,10 @@ The signal catalog lists all available monitoring types. This is read-only and p
 
 ```bash
 # List all signal types
-signals signals:list
+max signals:list
 
 # Get details for a specific signal
-signals signals:get linkedin-company-engagers
+max signals:get linkedin-company-engagers
 ```
 
 ### Businesses
@@ -72,19 +72,19 @@ Each team can have multiple businesses. All leads, subscriptions, and webhooks a
 
 ```bash
 # List all businesses in your team
-signals businesses:list
+max businesses:list
 
 # Get a business with its Ideal Customer Profile
-signals businesses:get 1
+max businesses:get 1
 
 # Create a business from a website (auto-analyzes name, description, and ICP)
-signals businesses:create --website https://acme.com
+max businesses:create --website https://acme.com
 
 # Create a business manually
-signals businesses:create --name "Acme Corp" --website https://acme.com
+max businesses:create --name "Acme Corp" --website https://acme.com
 
 # Create with ICP attributes
-signals businesses:create --name "Acme Corp" \
+max businesses:create --name "Acme Corp" \
   --icp '{"target_job_titles":["CTO","VP of Engineering"],"target_locations":["North America"]}'
 ```
 
@@ -99,10 +99,10 @@ signals businesses:create --name "Acme Corp" \
 
 ```bash
 # Update a business name
-signals businesses:update 1 --name "New Name"
+max businesses:update 1 --name "New Name"
 
 # Update the ICP (include the ICP id from businesses:get response)
-signals businesses:update 1 --icp '{"id":1,"target_job_titles":["CTO","VP Engineering"],"lead_matching_mode":70}'
+max businesses:update 1 --icp '{"id":1,"target_job_titles":["CTO","VP Engineering"]}'
 ```
 
 **`businesses:update` options:**
@@ -120,28 +120,28 @@ A subscription is a signal you've activated with a specific configuration (e.g. 
 
 ```bash
 # List all subscriptions
-signals subscriptions:list --business 1
+max subscriptions:list --business 1
 
 # Get a subscription with stats
-signals subscriptions:get 42 --business 1
+max subscriptions:get 42 --business 1
 
 # Create a subscription
-signals subscriptions:create --business 1 \
+max subscriptions:create --business 1 \
   --signal linkedin-company-engagers \
   --name "Apple Engagers" \
   --config '{"linkedin_url":"https://www.linkedin.com/company/apple/"}'
 
 # Update a subscription
-signals subscriptions:update 42 --business 1 --name "Renamed Subscription"
+max subscriptions:update 42 --business 1 --name "Renamed Subscription"
 
 # Pause (stops scanning for new leads)
-signals subscriptions:pause 42 --business 1
+max subscriptions:pause 42 --business 1
 
 # Resume
-signals subscriptions:resume 42 --business 1
+max subscriptions:resume 42 --business 1
 
 # Delete
-signals subscriptions:delete 42 --business 1
+max subscriptions:delete 42 --business 1
 ```
 
 **`subscriptions:create` options:**
@@ -167,14 +167,14 @@ Leads are enriched profiles discovered by your active subscriptions. Each lead i
 
 ```bash
 # List leads (paginated)
-signals leads:list --business 1
-signals leads:list --business 1 --page 2 --per-page 50
+max leads:list --business 1
+max leads:list --business 1 --page 2 --per-page 50
 
 # Get a single lead with full details and delivery history
-signals leads:get 1234 --business 1
+max leads:get 1234 --business 1
 
 # Delete a lead (soft-delete)
-signals leads:delete 1234 --business 1
+max leads:delete 1234 --business 1
 ```
 
 **`leads:list` options:**
@@ -191,13 +191,13 @@ Register URLs to receive an HTTP POST in real-time whenever a new lead is discov
 
 ```bash
 # List webhooks
-signals webhooks:list --business 1
+max webhooks:list --business 1
 
 # Create a webhook with HMAC signature verification
-signals webhooks:create --business 1 --url https://example.com/webhook --secret whsec_abc123
+max webhooks:create --business 1 --url https://example.com/webhook --secret whsec_abc123
 
 # Delete a webhook
-signals webhooks:delete 10 --business 1
+max webhooks:delete 10 --business 1
 ```
 
 **`webhooks:create` options:**
@@ -216,16 +216,16 @@ Every command outputs JSON for easy parsing with `jq` or consumption by AI agent
 
 ```bash
 # Get all lead emails
-signals leads:list --business 1 --per-page 100 | jq '.leads[] | .payload.email'
+max leads:list --business 1 --per-page 100 | jq '.leads[] | .payload.email'
 
 # Get subscription IDs that are active
-signals subscriptions:list --business 1 | jq '.subscriptions[] | select(.active) | .id'
+max subscriptions:list --business 1 | jq '.subscriptions[] | select(.active) | .id'
 
 # Count total leads
-signals leads:list --business 1 | jq '.meta.total_count'
+max leads:list --business 1 | jq '.meta.total_count'
 
 # List business names
-signals businesses:list | jq '.businesses[] | .name'
+max businesses:list | jq '.businesses[] | .name'
 ```
 
 ---
@@ -236,36 +236,36 @@ signals businesses:list | jq '.businesses[] | .name'
 
 ```bash
 # 1. Create a business from a website (auto-generates ICP)
-signals businesses:create --website https://acme.com
+max businesses:create --website https://acme.com
 
 # 2. Note the business ID from the response, then browse signals
-signals signals:list
+max signals:list
 
 # 3. Create a subscription
-signals subscriptions:create --business 1 \
+max subscriptions:create --business 1 \
   --signal linkedin-company-engagers \
   --name "Acme Engagers" \
   --config '{"linkedin_url":"https://www.linkedin.com/company/acme/"}'
 
 # 4. Check for leads
-signals leads:list --business 1
+max leads:list --business 1
 ```
 
 ### Pause and resume scanning
 
 ```bash
-signals subscriptions:pause 42 --business 1    # Stop scanning
-signals subscriptions:resume 42 --business 1   # Start scanning again
+max subscriptions:pause 42 --business 1    # Stop scanning
+max subscriptions:resume 42 --business 1   # Start scanning again
 ```
 
 ### Set up real-time notifications
 
 ```bash
 # Register a webhook
-signals webhooks:create --business 1 --url https://my-app.com/signals --secret my_secret
+max webhooks:create --business 1 --url https://my-app.com/signals --secret my_secret
 
 # Verify
-signals webhooks:list --business 1
+max webhooks:list --business 1
 ```
 
 ---
@@ -274,7 +274,7 @@ signals webhooks:list --business 1
 
 | Variable | Required | Description |
 |---|---|---|
-| `SIGNALS_API_KEY` | No | Your Signals API key (overrides saved config from `signals login`) |
+| `MAX_API_KEY` | No | Your Max API key (overrides saved config from `max login`) |
 
 ---
 
@@ -297,8 +297,8 @@ signals webhooks:list --business 1
 ## Development
 
 ```bash
-git clone https://github.com/sortlist/signals-cli.git
-cd signals-cli
+git clone https://github.com/sortlist/max-cli.git
+cd max-cli
 npm install
 npm run dev    # Watch mode
 npm run build  # Production build
@@ -309,8 +309,8 @@ npm run build  # Production build
 ```
 src/
   index.ts              # CLI entry point (yargs)
-  api.ts                # SignalsAPI client class
-  config.ts             # Config management (~/.signals/config.json)
+  api.ts                # ApiClient client class
+  config.ts             # Config management (~/.max/config.json)
   commands/
     login.ts            # login, logout
     signals.ts          # signals:list, signals:get
@@ -324,7 +324,7 @@ src/
 
 ## API Documentation
 
-Full API docs: [https://api.meetsignals.ai/docs/api](https://api.meetsignals.ai/docs/api)
+Full API docs: [https://api.yourmax.ai/docs/api](https://api.yourmax.ai/docs/api)
 
 ---
 
@@ -336,7 +336,7 @@ MIT
 
 ## Links
 
-- **Website:** [api.meetsignals.ai](https://api.meetsignals.ai)
-- **API Docs:** [api.meetsignals.ai/docs/api](https://api.meetsignals.ai/docs/api)
-- **GitHub:** [sortlist/signals-cli](https://github.com/sortlist/signals-cli)
-- **Issues:** [Report bugs](https://github.com/sortlist/signals-cli/issues)
+- **Website:** [api.yourmax.ai](https://api.yourmax.ai)
+- **API Docs:** [api.yourmax.ai/docs/api](https://api.yourmax.ai/docs/api)
+- **GitHub:** [sortlist/max-cli](https://github.com/sortlist/max-cli)
+- **Issues:** [Report bugs](https://github.com/sortlist/max-cli/issues)

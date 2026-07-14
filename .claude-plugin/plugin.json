@@ -1,13 +1,13 @@
 {
-  "name": "signals",
-  "description": "Intent signals CLI — monitor buying signals, discover leads matching your ICP, and enroll them into outbound campaigns. Powered by the Signals API.",
+  "name": "max",
+  "description": "Intent signals CLI — monitor buying signals, discover leads matching your ICP, and enroll them into outbound campaigns. Powered by Max API.",
   "version": "1.0.0",
   "author": {
     "name": "Nicolas Finet",
     "email": "nicolas@overloop.com"
   },
-  "homepage": "https://meetsignals.ai",
-  "repository": "https://github.com/sortlist/signals-cli",
+  "homepage": "https://yourmax.ai",
+  "repository": "https://github.com/sortlist/max-cli",
   "license": "MIT",
   "keywords": ["signals", "intent", "leads", "icp", "prospecting", "buying-signals", "sales-intelligence"]
 }

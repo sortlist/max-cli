@@ -1,20 +1,20 @@
 import fetch from 'node-fetch';
-import { SignalsConfig, saveConfig } from './config';
+import { Config, saveConfig } from './config';
 import { refreshAccessToken } from './oauth';
 
 // Refresh the access token this many milliseconds before it actually expires.
 const EXPIRY_SKEW_MS = 60_000;
 
-export class SignalsAPI {
-  private config: SignalsConfig;
+export class ApiClient {
+  private config: Config;
   private baseUrl: string;
   // Env-provided keys are never written back to disk.
   private persist: boolean;
 
-  constructor(config: SignalsConfig) {
+  constructor(config: Config) {
     this.config = { ...config };
-    this.persist = !process.env.SIGNALS_API_KEY;
-    this.baseUrl = (process.env.SIGNALS_API_URL || 'https://api.meetsignals.ai').replace(/\/$/, '');
+    this.persist = !process.env.MAX_API_KEY;
+    this.baseUrl = (process.env.MAX_API_URL || 'https://api.yourmax.ai').replace(/\/$/, '');
   }
 
   private isExpired(): boolean {
@@ -24,7 +24,7 @@ export class SignalsAPI {
 
   private async refresh(): Promise<void> {
     if (!this.config.refreshToken) {
-      throw new Error('Your session has expired. Run "signals login" to reconnect.');
+      throw new Error('Your session has expired. Run "max login" to reconnect.');
     }
     const tokens = await refreshAccessToken(this.config.refreshToken);
     this.config.accessToken = tokens.accessToken;
@@ -49,7 +49,7 @@ export class SignalsAPI {
       if (this.isExpired()) await this.refresh();
       return this.config.accessToken!;
     }
-    throw new Error('Not authenticated. Run "signals login".');
+    throw new Error('Not authenticated. Run "max login".');
   }
 
   private async request(endpoint: string, options: any = {}, retried = false): Promise<any> {
@@ -147,14 +147,14 @@ export class SignalsAPI {
     return this.request(`${this.businessPath(businessId)}/subscriptions/${id}`, { method: 'GET' });
   }
 
-  async createSubscription(businessId: string, data: { signal_slug: string; name: string; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
+  async createSubscription(businessId: string, data: { signal_slug: string; name: string; config?: Record<string, any>; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
     return this.request(`${this.businessPath(businessId)}/subscriptions`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateSubscription(businessId: string, id: string, data: { name?: string; active?: boolean; config?: Record<string, any>; daily_lead_limit?: number; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
+  async updateSubscription(businessId: string, id: string, data: { name?: string; active?: boolean; config?: Record<string, any>; integrations?: Array<{ integration_id: number; auto_deliver?: boolean; campaign_id?: string; campaign_name?: string; overloop_campaign_id?: string; overloop_campaign_name?: string }> }) {
     return this.request(`${this.businessPath(businessId)}/subscriptions/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),

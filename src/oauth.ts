@@ -19,9 +19,9 @@ export interface TokenSet {
   tokenType: string;
 }
 
-/** Base URL of the OAuth/authorization server (the Signals web app). */
+/** Base URL of the OAuth/authorization server (the web app). */
 export function oauthBaseUrl(): string {
-  return (process.env.SIGNALS_OAUTH_URL || 'https://meetsignals.ai').replace(/\/$/, '');
+  return (process.env.MAX_OAUTH_URL || 'https://yourmax.ai').replace(/\/$/, '');
 }
 
 /** Public client_id baked into the CLI; overridable for self-hosted setups. */
@@ -109,13 +109,13 @@ export async function pollForToken(device: DeviceCodeResponse): Promise<TokenSet
       case 'access_denied':
         throw new Error('Access was denied in the browser.');
       case 'expired_token':
-        throw new Error('The verification code expired. Please run "signals login" again.');
+        throw new Error('The verification code expired. Please run "max login" again.');
       default:
         throw new Error(`Authorization failed: ${json.error_description || json.error || `HTTP ${response.status}`}`);
     }
   }
 
-  throw new Error('Timed out waiting for authorization. Please run "signals login" again.');
+  throw new Error('Timed out waiting for authorization. Please run "max login" again.');
 }
 
 /** Exchange a refresh token for a fresh access token. */
@@ -139,7 +139,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<TokenSet
   return toTokenSet(json);
 }
 
-/** Best-effort token revocation (used by `signals logout`). */
+/** Best-effort token revocation (used by `max logout`). */
 export async function revokeToken(token: string): Promise<void> {
   try {
     await fetch(`${oauthBaseUrl()}/oauth/revoke`, {
